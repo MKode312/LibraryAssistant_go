@@ -1,0 +1,11 @@
+env: "local"
+token_ttl: 20m
+grpc:
+  port: 44043
+  timeout: 4s
+postgres:
+  name: "ssoDB"
+  port: 5432
+  user: "MKode312"
+  password: "crusader30803"
+  host: "sso-db"
