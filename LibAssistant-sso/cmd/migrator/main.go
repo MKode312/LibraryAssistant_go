@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
@@ -21,6 +22,8 @@ func main() {
 	}
 
 	cfg := config.MustLoad()
+
+	time.Sleep(3 * time.Second)
 
 	conn, err := pgx.Connect(context.Background(), cfg.Postgres.DBurl)
 	if err != nil {
