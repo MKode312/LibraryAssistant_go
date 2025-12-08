@@ -1,0 +1,12 @@
+env: "local"
+app_secret: "krivoschekova soset"
+http_server:
+  address: "0.0.0.0:8082"
+  timeout: 4s
+  idle_timeout: 60s
+clients:
+  sso:
+    address: "sso:44043"
+    timeout: 4s
+    retries_count: 3
+    insecure: false

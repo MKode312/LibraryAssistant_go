@@ -37,7 +37,6 @@ func (s *serverAPI) Login(ctx context.Context, req *ssov1.LoginRequest) (*ssov1.
 		if errors.Is(err, auth.ErrInvalidCredentials) {
 			return nil, status.Error(codes.InvalidArgument, "invalid email or password")
 		}
-
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
@@ -56,6 +55,10 @@ func (s *serverAPI) Register(ctx context.Context, req *ssov1.RegisterRequest) (*
 	if err != nil {
 		if errors.Is(err, auth.ErrUserExists) {
 			return nil, status.Error(codes.AlreadyExists, "user already exists")
+		}
+
+		if errors.Is(err, auth.ErrInvalidCredentials) {
+			return nil, status.Error(codes.PermissionDenied, "invalid email or password")
 		}
 
 		return nil, status.Error(codes.Internal, "internal error")
@@ -77,8 +80,12 @@ func (s *serverAPI) RegisterAsAdmin(ctx context.Context, req *ssov1.RegisterAsAd
 			return nil, status.Error(codes.AlreadyExists, "user already exists")
 		}
 
+		if errors.Is(err, auth.ErrInvalidCredentials) {
+			return nil, status.Error(codes.PermissionDenied, "invalid email or password")
+		}
+
 		if errors.Is(err, auth.ErrWrongAdminSecret) {
-			return nil, status.Error(codes.InvalidArgument, "wrong admin secret key")
+			return nil, status.Error(codes.PermissionDenied, "wrong admin secret key")
 		}
 
 		return nil, status.Error(codes.Internal, "internal error")
@@ -151,7 +158,7 @@ func validateRegisterAsAdmin(req *ssov1.RegisterAsAdminRequest) error {
 
 func validateIsAdmin(req *ssov1.IsAdminRequest) error {
 	if req.GetUserId() == 0 {
-		return status.Error(codes.InvalidArgument, "secret admin password is requited")
+		return status.Error(codes.InvalidArgument, "secret admin password is required")
 	}
 
 	return nil

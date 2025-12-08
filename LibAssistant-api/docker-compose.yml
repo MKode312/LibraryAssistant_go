@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  api:
+    container_name: api
+    command: ["./api"]
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - CONFIG_PATH=./config/local.yaml
+    volumes:
+      - ./config:/app/config:ro
+    ports:
+      - 8082:8082
+    networks:
+      - shared
+networks:
+ shared:
+  external: true
