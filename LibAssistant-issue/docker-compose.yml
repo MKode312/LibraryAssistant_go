@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  issue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: issue
+    ports:
+      - "50051:50051"
+    volumes:
+      - ./logs:/app/logs
+      - ./issue_service.db:/app/issue_service.db
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    networks:
+      - shared
+networks:
+  shared:
+    external: true

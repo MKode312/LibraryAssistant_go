@@ -1,0 +1,93 @@
+﻿syntax = "proto3";
+
+package issue;
+
+import "google/protobuf/timestamp.proto";
+
+service IssueService {
+  rpc IssueBook (IssueRequest) returns (IssueResponse) {}
+  rpc CheckAvailability (CheckAvailabilityRequest) returns (CheckAvailabilityResponse) {}
+  rpc ReturnBook (ReturnRequest) returns (ReturnResponse) {}
+  rpc ReportLost (ReportLostRequest) returns (ReportLostResponse) {}
+  rpc GetAllDebts (GetAllDebtsRequest) returns (GetAllDebtsResponse) {}
+  rpc ViewDebtors (ViewDebtorsRequest) returns (ViewDebtorsResponse) {}
+  rpc AddBook (AddBookRequest) returns (AddBookResponse) {}
+}
+
+message IssueRequest {
+  int64 book_id = 1;
+  int64 student_id = 2;
+  int32 days_due = 3; // optional, default 14
+}
+
+message IssueResponse {
+  bool success = 1;
+  string message = 2;
+  int64 issue_id = 3;
+}
+
+message CheckAvailabilityRequest {
+  int64 book_id = 1;
+}
+
+message CheckAvailabilityResponse {
+  int32 available_copies = 1;
+  int32 total_copies = 2;
+}
+
+message ReturnRequest {
+  int64 issue_id = 1;
+}
+
+message ReturnResponse {
+  bool success = 1;
+  string message = 2;
+  int32 fine = 3;
+}
+
+message ReportLostRequest {
+  int64 issue_id = 1;
+}
+
+message ReportLostResponse {
+  bool success = 1;
+  string message = 2;
+  int32 fine = 3;
+}
+
+message GetAllDebtsRequest {}
+
+message GetAllDebtsResponse {
+  repeated Debt debts = 1;
+}
+
+message ViewDebtorsRequest {
+  int32 limit = 1; // optional
+}
+
+message ViewDebtorsResponse {
+  repeated Debt debts = 1;
+  bool from_cache = 2;
+}
+
+message Debt {
+  int64 issue_id = 1;
+  int64 student_id = 2;
+  string student_name = 3;
+  int64 book_id = 4;
+  string book_title = 5;
+  google.protobuf.Timestamp due_date = 6;
+  int32 overdue_days = 7;
+  int32 fine = 8;
+}
+
+message AddBookRequest {
+  string title = 1;
+  int32 total_copies = 2;
+}
+
+message AddBookResponse {
+  bool success = 1;
+  string message = 2;
+  int64 book_id = 3;
+}
