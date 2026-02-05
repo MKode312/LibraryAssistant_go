@@ -1,9 +1,9 @@
 package main
 
 import (
-	"LibAssistant_sso/internal/app"
-	"LibAssistant_sso/internal/config"
-	"LibAssistant_sso/internal/lib/logger/handlers/slogpretty"
+	"LibAssistant_books/internal/app"
+	"LibAssistant_books/internal/config"
+	"LibAssistant_books/internal/lib/logger/handlers/slogpretty"
 	"context"
 	"log/slog"
 	"os"
@@ -22,11 +22,14 @@ func main() {
 
 	log := setupLogger(cfg.Env)
 
-	log.Info("starting sso service")
+	log.Info("starting books service")
+
+	log.Info(cfg.Postgres.DBurl)
+
 
 	ctx := context.Background()
 
-	application  := app.New(ctx, log, cfg.Postgres.DBurl, cfg.GRPC.Port, cfg.TokenTTL)
+	application  := app.New(ctx, log, cfg.Postgres.DBurl, cfg.GRPC.Port)
 
 	go application.GRPCSrv.MustRun()
 
@@ -35,11 +38,11 @@ func main() {
 
 	sign := <-stop
 
-	log.Info("stopping application", slog.String("signal", sign.String()))
+	log.Info("stopping books service", slog.String("signal", sign.String()))
 
 	application.GRPCSrv.Stop()
 
-	log.Info("application stopped")
+	log.Info("books service stopped")
 }
 
 func setupLogger(env string) *slog.Logger {

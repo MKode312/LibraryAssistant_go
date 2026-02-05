@@ -1,10 +1,9 @@
-
 services:
-  sso:
-    container_name: sso
-    command: sh -c "/app/migrator & /app/sso wait"
+  books:
+    container_name: books
+    command: sh -c "/app/migrator & /app/books wait"
     depends_on:
-     - sso-db
+     - books-db
     build: 
       context: .
       dockerfile: Dockerfile
@@ -16,16 +15,16 @@ services:
       - ./config:/app/config:ro
       - ./migrations:/app/migrations:ro
     networks:
-      - sso_net
+      - books_net
       - shared
     ports:
-      - 44043:44043
+      - 40004:40004
 
-  sso-db:
+  books-db:
     image: postgres:15
-    container_name: sso-db
+    container_name: books-db
     env_file:
-     - .env
+      - .env
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -40,11 +39,11 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - sso_net
+      - books_net
       - shared
 volumes:
   postgres_data:
 networks:
-  sso_net:
+  books_net:
   shared:
    external: true

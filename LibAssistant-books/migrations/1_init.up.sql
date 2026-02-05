@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS books (
+    bookID TEXT NOT NULL UNIQUE,
+    genre TEXT NOT NULL,
+    title TEXT NOT NULL UNIQUE,
+    quantity INTEGER
+);
+CREATE INDEX IF NOT EXISTS idx_bookID ON books (bookID);

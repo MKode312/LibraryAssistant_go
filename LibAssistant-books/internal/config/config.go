@@ -7,12 +7,10 @@ import (
 	"time"
 
 	"github.com/ilyakaznacheev/cleanenv"
-	_ "github.com/joho/godotenv/autoload"
 )
 
 type Config struct {
 	Env      string         `yaml:"env" env-default:"local"`
-	TokenTTL time.Duration  `yaml:"token_ttl" env-required:"true"`
 	GRPC     GRPCConfig     `yaml:"grpc"`
 	Postgres PostgresConfig `yaml:"postgres"`
 }
@@ -45,7 +43,7 @@ func MustLoad() *Config {
 	cfg.Postgres.Name = dbName
 	cfg.Postgres.Password = dbPassword
 	cfg.Postgres.User = dbUser
-
+	
 	cfg.Postgres.DBurl = fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable", cfg.Postgres.User, cfg.Postgres.Password, cfg.Postgres.Host, cfg.Postgres.Port, cfg.Postgres.Name)
 
 	return cfg

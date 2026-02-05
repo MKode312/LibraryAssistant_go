@@ -1,7 +1,7 @@
 package main
 
 import (
-	"LibAssistant_sso/internal/config"
+	"LibAssistant_books/internal/config"
 	"context"
 	"errors"
 	"fmt"
@@ -47,5 +47,4 @@ func main() {
 	}
 
 	fmt.Println("migrations applied successfully")
-
 }
