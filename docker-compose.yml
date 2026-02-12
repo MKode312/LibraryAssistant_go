@@ -1,0 +1,149 @@
+services:
+  sso-db:
+    image: postgres:15
+    container_name: sso-db
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${SSO_DB_USER}
+      POSTGRES_PASSWORD: ${SSO_DB_PASSWORD}
+      POSTGRES_DB: ${SSO_DB_NAME}
+    ports:
+      - "${SSO_DB_PORT}:5432"
+    volumes:
+      - sso_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${SSO_DB_USER} -d ${SSO_DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - sso_net
+      - shared
+    restart: unless-stopped
+
+  sso:
+    container_name: sso
+    command: sh -c "/app/migrator & /app/sso wait"
+    depends_on:
+      sso-db:
+        condition: service_healthy
+    build:
+      context: ./LibAssistant-sso
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      - CONFIG_PATH=./config/local.yaml
+      - DB_USER=${SSO_DB_USER}
+      - DB_PASSWORD=${SSO_DB_PASSWORD}
+      - DB_NAME=${SSO_DB_NAME}
+      - APP_SECRET=${SSO_APP_SECRET}
+    volumes:
+      - ./LibAssistant-sso/config:/app/config:ro
+      - ./LibAssistant-sso/migrations:/app/migrations:ro
+    ports:
+      - "${SSO_PORT}:44043"
+    networks:
+      - sso_net
+      - shared
+    restart: unless-stopped
+
+  books-db:
+    image: postgres:15
+    container_name: books-db
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${BOOKS_DB_USER}
+      POSTGRES_PASSWORD: ${BOOKS_DB_PASSWORD}
+      POSTGRES_DB: ${BOOKS_DB_NAME}
+    ports:
+      - "${BOOKS_DB_PORT}:5432"
+    volumes:
+      - books_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${BOOKS_DB_USER} -d ${BOOKS_DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - books_net
+      - shared
+    restart: unless-stopped
+
+  books:
+    container_name: books
+    command: sh -c "/app/migrator & /app/books wait"
+    depends_on:
+      books-db:
+        condition: service_healthy
+    build:
+      context: ./LibAssistant-books
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      - CONFIG_PATH=./config/local.yaml
+      - DB_USER=${BOOKS_DB_USER}
+      - DB_PASSWORD=${BOOKS_DB_PASSWORD}
+      - DB_NAME=${BOOKS_DB_NAME}
+    volumes:
+      - ./LibAssistant-books/config:/app/config:ro
+      - ./LibAssistant-books/migrations:/app/migrations:ro
+    ports:
+      - "${BOOKS_PORT}:40004"
+    networks:
+      - books_net
+      - shared
+    restart: unless-stopped
+
+  api:
+    container_name: api
+    command: ["./api"]
+    build:
+      context: ./LibAssistant-api
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      - CONFIG_PATH=./config/local.yaml
+    volumes:
+      - ./LibAssistant-api/config:/app/config:ro
+    ports:
+      - "${API_PORT}:8082"
+    networks:
+      - shared
+    depends_on:
+      - sso
+      - books
+    restart: unless-stopped
+
+  issue:
+    build:
+      context: ./LibAssistant-issue
+      dockerfile: Dockerfile
+    container_name: issue
+    env_file:
+      - .env
+    ports:
+      - "${ISSUE_PORT}:50051"
+    volumes:
+      - ./LibAssistant-issue/logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=${PYTHONUNBUFFERED}
+    networks:
+      - shared
+    restart: unless-stopped
+
+volumes:
+  sso_postgres_data:
+  books_postgres_data:
+
+networks:
+  sso_net:
+    driver: bridge
+  books_net:
+    driver: bridge
+  shared:
+    driver: bridge

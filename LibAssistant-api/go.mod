@@ -5,7 +5,11 @@ go 1.25.2
 require github.com/ilyakaznacheev/cleanenv v1.5.0
 
 require (
+<<<<<<< HEAD
 	github.com/go-chi/chi/v5 v5.2.3
+=======
+	github.com/go-chi/chi/v5 v5.2.5
+>>>>>>> 9a622cd (now there is one docker-compose file for the whole project)
 	github.com/go-playground/validator/v10 v10.28.0
 )
 
@@ -25,7 +29,11 @@ require (
 )
 
 require (
+<<<<<<< HEAD
 	github.com/MKode312/protos v0.1.2
+=======
+	github.com/MKode312/protos v0.1.6
+>>>>>>> 9a622cd (now there is one docker-compose file for the whole project)
 	golang.org/x/net v0.43.0 // indirect
 	golang.org/x/text v0.29.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250804133106-a7a43d27e69b // indirect

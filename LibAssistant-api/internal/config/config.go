@@ -29,7 +29,12 @@ type Client struct {
 }
 
 type ClientsConfig struct {
+<<<<<<< HEAD
 	SSO Client `yaml:"sso"`
+=======
+	SSO   Client `yaml:"sso"`
+	Books Client `yaml:"books"`
+>>>>>>> 9a622cd (now there is one docker-compose file for the whole project)
 }
 
 func MustLoad() *Config {
