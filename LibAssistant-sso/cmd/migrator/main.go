@@ -15,11 +15,7 @@ import (
 )
 
 func main() {
-<<<<<<< HEAD
-	migrationsPath, ok := os.LookupEnv("MIGRATIONS_PATH")
-=======
 	migrationsPath, ok := os.LookupEnv("SSO_MIGRATIONS_PATH")
->>>>>>> 9a622cd (now there is one docker-compose file for the whole project)
 	if !ok {
 		panic("migrations-path is required")
 	}

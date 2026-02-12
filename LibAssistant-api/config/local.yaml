@@ -9,13 +9,4 @@ clients:
     address: "sso:44043"
     timeout: 4s
     retries_count: 3
-<<<<<<< HEAD
     insecure: false
-=======
-    insecure: false
-  books:
-    address: "books:40004"
-    timeout: 4s
-    retries_count: 3
-    insecure: false
->>>>>>> 9a622cd (now there is one docker-compose file for the whole project)
