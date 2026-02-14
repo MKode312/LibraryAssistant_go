@@ -42,6 +42,7 @@ logs/
 # Cache
 cache/
 *.json
+.DS_Store
 
 # Docker
 .dockerignore
