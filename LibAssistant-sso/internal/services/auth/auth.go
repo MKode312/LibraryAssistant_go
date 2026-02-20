@@ -125,7 +125,7 @@ func (a *Auth) RegisterNewAdmin(ctx context.Context, email string, password stri
 
 	log.Info("registering admin")
 
-	adminPswd, ok := os.LookupEnv("ADMIN_SECRET")
+	adminPswd, ok := os.LookupEnv("APP_SECRET")
 	if !ok {
 		log.Error("failed to find admin_secret")
 

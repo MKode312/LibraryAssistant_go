@@ -24,9 +24,6 @@ func main() {
 
 	log.Info("starting books service")
 
-	log.Info(cfg.Postgres.DBurl)
-
-
 	ctx := context.Background()
 
 	application  := app.New(ctx, log, cfg.Postgres.DBurl, cfg.GRPC.Port)

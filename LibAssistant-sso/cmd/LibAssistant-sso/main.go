@@ -35,11 +35,11 @@ func main() {
 
 	sign := <-stop
 
-	log.Info("stopping application", slog.String("signal", sign.String()))
+	log.Info("stopping sso service", slog.String("signal", sign.String()))
 
 	application.GRPCSrv.Stop()
 
-	log.Info("application stopped")
+	log.Info("sso service stopped")
 }
 
 func setupLogger(env string) *slog.Logger {

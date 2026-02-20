@@ -1,8 +1,9 @@
-package login
+package getlistofbooks
 
 import (
-	ssogrpc "LibAssistant_api/internal/clients/sso/grpc"
-	"LibAssistant_api/internal/lib/api/response"
+	booksgrpc "LibAssistant_api/internal/clients/books/grpc"
+	"LibAssistant_api/internal/domain/models"
+	resp "LibAssistant_api/internal/lib/api/response"
 	"LibAssistant_api/internal/lib/logger/sl"
 	"context"
 	"errors"
@@ -14,22 +15,19 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type Request struct {
-	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required"`
-}
+type Request struct{}
 
 type Response struct {
 	resp.Response
-	Token string  `json:"token"`
+	Books []models.Book `json:"books"`
 }
 
-func New(ctx context.Context, log *slog.Logger, ssoClient *ssogrpc.Client) http.HandlerFunc {
+func New(ctx context.Context, log *slog.Logger, booksClient *booksgrpc.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.Auth.Register.New"
+		const op = "handlers.Books.GetListOfBooks.New"
 
 		log = log.With(
-			slog.String("op", op), 
+			slog.String("op", op),
 			slog.String("request_id", middleware.GetReqID(r.Context())),
 		)
 
@@ -46,55 +44,47 @@ func New(ctx context.Context, log *slog.Logger, ssoClient *ssogrpc.Client) http.
 
 		if err := validator.New().Struct(req); err != nil {
 			validationErr := err.(validator.ValidationErrors)
-
 			log.Error("invalid request", sl.Err(err))
-
 			w.WriteHeader(http.StatusBadRequest)
-
 			render.JSON(w, r, resp.Error("Invalid request"))
 			render.JSON(w, r, resp.ValidationError(validationErr))
-
 			return
 		}
 
-		email := req.Email
-		password := req.Password
-
-		token, err := ssoClient.Login(ctx, email, password)
+		books, err := booksClient.GetListOfBooks(ctx)
 		if err != nil {
-			if errors.Is(err, ssogrpc.ErrInvalidCredentials) {
-				log.Error("invalid credentials")
+			if errors.Is(err, booksgrpc.ErrInvalidRequest) {
+				log.Error("invalid request")
 				w.WriteHeader(http.StatusBadRequest)
-				render.JSON(w, r, resp.Error("Invalid email or password"))
-				return
-			} 
-
-			if errors.Is(err, ssogrpc.ErrInternal) {
-				log.Error("internal error")
-				w.WriteHeader(http.StatusInternalServerError)
-				render.JSON(w, r, resp.Error("Unknown internal error"))
+				render.JSON(w, r, resp.Error("Invalid request"))
 				return
 			}
 
-			log.Error("failed to log user in", sl.Err(err))
+			if errors.Is(err, booksgrpc.ErrNothingToList) {
+				log.Error("nothing to list")
+				w.WriteHeader(http.StatusNoContent)
+				render.JSON(w, r, resp.Error("Nothing to list"))
+				return
+			}
+
+			if errors.Is(err, booksgrpc.ErrInternal) {
+				log.Error("internal error", sl.Err(err))
+				w.WriteHeader(http.StatusInternalServerError)
+				render.JSON(w, r, resp.Error("Unknown error"))
+				return
+			}
+
+			log.Error("failed to get list of books", sl.Err(err))
 			w.WriteHeader(http.StatusInternalServerError)
 			render.JSON(w, r, resp.Error("Unknown error"))
 			return
 		}
 
-		http.SetCookie(w, &http.Cookie{
-			Name: "auth_token",
-			Value: token,
-			SameSite: http.SameSiteNoneMode,
-			HttpOnly: true,
-			Path: "/",
-		})
-
-		log.Info("user logged in successfully")
-		w.WriteHeader(http.StatusCreated)
+		log.Info("list of books was received")
+		w.WriteHeader(http.StatusOK)
 		render.JSON(w, r, Response{
 			Response: resp.OK(),
-			Token: token,
+			Books: books,
 		})
 	}
 }

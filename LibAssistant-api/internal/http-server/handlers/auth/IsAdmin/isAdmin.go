@@ -8,15 +8,15 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"strconv"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
 )
 
-type Request struct {
-	UserID int64 `json:"userID" validate:"required"`
-}
+type Request struct {}
 
 type Response struct {
 	resp.Response
@@ -36,11 +36,8 @@ func New(ctx context.Context, log *slog.Logger, ssoClient *ssogrpc.Client) http.
 
 		if err := render.DecodeJSON(r.Body, &req); err != nil {
 			log.Error("failed to decode request body", sl.Err(err))
-
 			w.WriteHeader(http.StatusInternalServerError)
-
 			render.JSON(w, r, resp.Error("Unknown error"))
-
 			return
 		}
 
@@ -48,28 +45,28 @@ func New(ctx context.Context, log *slog.Logger, ssoClient *ssogrpc.Client) http.
 
 		if err := validator.New().Struct(req); err != nil {
 			validationErr := err.(validator.ValidationErrors)
-
 			log.Error("invalid request", sl.Err(err))
-
 			w.WriteHeader(http.StatusBadRequest)
-
 			render.JSON(w, r, resp.Error("Invalid request"))
 			render.JSON(w, r, resp.ValidationError(validationErr))
-
 			return
 		}
 
-		userID := req.UserID
+		userID := chi.URLParam(r, "userID")
+		numUserID, err := strconv.Atoi(userID)
+		if err != nil {
+			log.Error("internal error", sl.Err(err))
+			w.WriteHeader(http.StatusInternalServerError)
+			render.JSON(w, r, resp.Error("Unknown error"))
+			return
+		}
 
-		isAdmin, err := ssoClient.IsAdmin(ctx, userID)
+		isAdmin, err := ssoClient.IsAdmin(ctx, int64(numUserID))
 		if err != nil {
 			if errors.Is(err, ssogrpc.ErrInvalidCredentials) {
 				log.Error("invalid credentials")
-
 				w.WriteHeader(http.StatusBadRequest)
-
 				render.JSON(w, r, resp.Error("Invalid email or password"))
-
 				return
 			}
 

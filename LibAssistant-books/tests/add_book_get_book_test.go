@@ -24,10 +24,10 @@ func TestAddGet_HappyPath(t *testing.T) {
 	})
 
 	require.NoError(t, err)
-	assert.NotEmpty(t, respAdd.GetBookID())
+	assert.NotEmpty(t, respAdd.GetBookId())
 
-	respGet, err := st.BooksClient.GetBook(ctx, &booksv1.GetBookRequest{
-		BookID: respAdd.GetBookID(),
+	respGet, err := st.BooksClient.GetBookByID(ctx, &booksv1.GetBookByIDRequest{
+		BookId: respAdd.GetBookId(),
 	})
 	require.NoError(t, err)
 

@@ -4,9 +4,15 @@ http_server:
   address: "0.0.0.0:8082"
   timeout: 4s
   idle_timeout: 60s
+  shutdown_timeout: 10s
 clients:
   sso:
     address: "sso:44043"
+    timeout: 4s
+    retries_count: 3
+    insecure: false
+  books:
+    address: "books:40004"
     timeout: 4s
     retries_count: 3
     insecure: false

@@ -3,7 +3,7 @@ module LibAssistant_books
 go 1.25.2
 
 require (
-	github.com/MKode312/protos v0.1.6
+	github.com/MKode312/protos v0.1.8
 	github.com/brianvoe/gofakeit/v6 v6.28.0
 	github.com/golang-migrate/migrate/v4 v4.19.1
 	github.com/google/uuid v1.6.0

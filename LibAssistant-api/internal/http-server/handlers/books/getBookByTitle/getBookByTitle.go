@@ -1,32 +1,31 @@
-package create
+package getbookbytitle
 
 import (
 	booksgrpc "LibAssistant_api/internal/clients/books/grpc"
-	"LibAssistant_api/internal/lib/api/response"
+	"LibAssistant_api/internal/domain/models"
+	resp "LibAssistant_api/internal/lib/api/response"
 	"LibAssistant_api/internal/lib/logger/sl"
 	"context"
+	"errors"
 	"log/slog"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
 )
 
-type Request struct {
-	Title       string `json:"title" validate:"required"`
-	Category    string `json:"category" validate:"required"`
-	TotalCopies int64  `json:"totalCopies" validate:"gte=1"`
-}
+type Request struct {}
 
 type Response struct {
 	resp.Response
-	ID string `json:"id"`
+	Book models.Book `json:"book"`
 }
 
 func New(ctx context.Context, log *slog.Logger, booksClient *booksgrpc.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.Books.Create.New"
+		const op = "handlers.Books.GetBookByTitle.New"
 
 		log = log.With(
 			slog.String("op", op),
@@ -42,6 +41,8 @@ func New(ctx context.Context, log *slog.Logger, booksClient *booksgrpc.Client) h
 			return
 		}
 
+		log.Info("request body decoded", slog.Any("request", req))
+
 		if err := validator.New().Struct(req); err != nil {
 			validationErr := err.(validator.ValidationErrors)
 			log.Error("invalid request", sl.Err(err))
@@ -51,18 +52,42 @@ func New(ctx context.Context, log *slog.Logger, booksClient *booksgrpc.Client) h
 			return
 		}
 
-		bookID, err := booksClient.AddBook(ctx, req.Category, req.Title, req.TotalCopies)
+		title := chi.URLParam(r, "title")
+
+		book, err := booksClient.GetBookByTitle(ctx, title)
 		if err != nil {
-			log.Error("failed to create book", sl.Err(err))
+			if errors.Is(err, booksgrpc.ErrInvalidRequest) {
+				log.Error("invalid request")
+				w.WriteHeader(http.StatusBadRequest)
+				render.JSON(w, r, resp.Error("Invalid request"))
+				return
+			}
+
+			if errors.Is(err, booksgrpc.ErrBookNotFound) {
+				log.Error("book not found")
+				w.WriteHeader(http.StatusUnprocessableEntity)
+				render.JSON(w, r, resp.Error("Book not found"))
+				return
+			}
+
+			if errors.Is(err, booksgrpc.ErrInternal) {
+				log.Error("internal error", sl.Err(err))
+				w.WriteHeader(http.StatusInternalServerError)
+				render.JSON(w, r, resp.Error("Unknown error"))
+				return
+			}
+
+			log.Error("failed to get book by title", sl.Err(err))
 			w.WriteHeader(http.StatusInternalServerError)
 			render.JSON(w, r, resp.Error("Unknown error"))
 			return
 		}
 
-		w.WriteHeader(http.StatusCreated)
+		log.Info("book was received by title")
+		w.WriteHeader(http.StatusOK)
 		render.JSON(w, r, Response{
 			Response: resp.OK(),
-			ID:       bookID,
+			Book: book,
 		})
 	}
 }

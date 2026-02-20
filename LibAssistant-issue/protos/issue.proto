@@ -4,13 +4,21 @@ package issue;
 
 import "google/protobuf/timestamp.proto";
 
+//Issue books, return them, report loss and viewing debtors
 service IssueService {
+  //Issue book by it's id and student's id for the fixed amount of days
   rpc IssueBook (IssueRequest) returns (IssueResponse) {}
+  //Check the availability of the book to be issued
   rpc CheckAvailability (CheckAvailabilityRequest) returns (CheckAvailabilityResponse) {}
+  //Return book after issuing it
   rpc ReturnBook (ReturnRequest) returns (ReturnResponse) {}
+  //Report loss of the book
   rpc ReportLost (ReportLostRequest) returns (ReportLostResponse) {}
+  //Get all the saved debts 
   rpc GetAllDebts (GetAllDebtsRequest) returns (GetAllDebtsResponse) {}
+  //View all the saved debtors 
   rpc ViewDebtors (ViewDebtorsRequest) returns (ViewDebtorsResponse) {}
+  //Take a book from the storage of books service
   rpc AddBook (AddBookRequest) returns (AddBookResponse) {}
 }
 

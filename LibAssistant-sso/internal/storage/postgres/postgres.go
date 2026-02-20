@@ -28,12 +28,29 @@ func New(ctx context.Context, dsn string) (*Storage, error) {
 	return &Storage{db: db}, nil
 }
 
-func (s *Storage) SaveUser(ctx context.Context, email string, passHash []byte) (int64, error) {
+func (s *Storage) SaveUser(ctx context.Context, email string, passHash []byte) (userID int64, err error) {
 	const op = "storage.postgres.SaveUser"
+
+	tx, err := s.db.Begin(ctx)
+	if err != nil {
+		return 0, fmt.Errorf("%s: %w", op, err)
+	}
+
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback(ctx)
+			return
+		}
+
+		commitErr := tx.Commit(ctx)
+		if commitErr != nil {
+			err = fmt.Errorf("%s: %w", op, commitErr)
+		}
+	}()
 
 	id := time.Now().Unix()
 
-	_, err := s.db.Exec(ctx, "INSERT INTO users(id, email, pass_hash) VALUES($1, $2, $3)", id, email, passHash)
+	_, err = tx.Exec(ctx, "INSERT INTO users(id, email, pass_hash) VALUES($1, $2, $3)", id, email, passHash)
 	if err != nil {
 		if strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
 			return 0, fmt.Errorf("%s: %w", op, storage.ErrUserExists)
@@ -45,15 +62,30 @@ func (s *Storage) SaveUser(ctx context.Context, email string, passHash []byte) (
 }
 
 // User returns user by email.
-func (s *Storage) User(ctx context.Context, email string) (models.User, error) {
+func (s *Storage) User(ctx context.Context, email string) (user models.User, err error) {
 	const op = "storage.postgres.User"
 
-	rows, err := s.db.Query(ctx, "SELECT id, email, pass_hash FROM users WHERE email = $1", email)
+	tx, err := s.db.Begin(ctx)
 	if err != nil {
 		return models.User{}, fmt.Errorf("%s: %w", op, err)
 	}
 
-	var user models.User
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback(ctx)
+			return
+		}
+
+		commitErr := tx.Commit(ctx)
+		if commitErr != nil {
+			err = fmt.Errorf("%s: %w", op, commitErr)
+		}
+	}()
+
+	rows, err := tx.Query(ctx, "SELECT id, email, pass_hash FROM users WHERE email = $1", email)
+	if err != nil {
+		return models.User{}, fmt.Errorf("%s: %w", op, err)
+	}
 
 	for rows.Next() {
 		if err := rows.Scan(&user.ID, &user.Email, &user.PassHash); err != nil {
@@ -71,9 +103,26 @@ func (s *Storage) User(ctx context.Context, email string) (models.User, error) {
 func (s *Storage) SaveAdmin(ctx context.Context, email string, passHash []byte) (uid int64, err error) {
 	const op = "storage.postgres.SaveAdmin"
 
+	tx, err := s.db.Begin(ctx)
+	if err != nil {
+		return 0, fmt.Errorf("%s: %w", op, err)
+	}
+
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback(ctx)
+			return
+		}
+
+		commitErr := tx.Commit(ctx)
+		if commitErr != nil {
+			err = fmt.Errorf("%s: %w", op, commitErr)
+		}
+	}()
+
 	id := time.Now().Unix()
 
-	_, err = s.db.Exec(ctx, "INSERT INTO users(id, email, pass_hash, is_admin) VALUES($1, $2, $3, $4)", id, email, passHash, true)
+	_, err = tx.Exec(ctx, "INSERT INTO users(id, email, pass_hash, is_admin) VALUES($1, $2, $3, $4)", id, email, passHash, true)
 	if err != nil {
 		if strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
 			return 0, fmt.Errorf("%s: %w", op, storage.ErrUserExists)
@@ -84,11 +133,27 @@ func (s *Storage) SaveAdmin(ctx context.Context, email string, passHash []byte) 
 	return id, nil
 }
 
-func (s *Storage) IsAdmin(ctx context.Context, userID int64) (bool, error) {
+func (s *Storage) IsAdmin(ctx context.Context, userID int64) (isAdmin bool, err error) {
     const op = "storage.postgres.IsAdmin"
 
-    var isAdmin bool
-    err := s.db.QueryRow(ctx, "SELECT is_admin FROM users WHERE id = $1", userID).Scan(&isAdmin)
+	tx, err := s.db.Begin(ctx)
+	if err != nil {
+		return false, fmt.Errorf("%s: %w", op, err)
+	}
+
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback(ctx)
+			return
+		}
+
+		commitErr := tx.Commit(ctx)
+		if commitErr != nil {
+			err = fmt.Errorf("%s: %w", op, commitErr)
+		}
+	}()
+
+    err = tx.QueryRow(ctx, "SELECT is_admin FROM users WHERE id = $1", userID).Scan(&isAdmin)
     if err != nil {
         if errors.Is(err, pgx.ErrNoRows) {
             return false, fmt.Errorf("%s: %w", op, storage.ErrUserNotFound)

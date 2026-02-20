@@ -38,7 +38,7 @@ services:
       - DB_USER=${SSO_DB_USER}
       - DB_PASSWORD=${SSO_DB_PASSWORD}
       - DB_NAME=${SSO_DB_NAME}
-      - APP_SECRET=${SSO_APP_SECRET}
+      - APP_SECRET=${APP_SECRET}
     volumes:
       - ./LibAssistant-sso/config:/app/config:ro
       - ./LibAssistant-sso/migrations:/app/migrations:ro
@@ -108,6 +108,7 @@ services:
       - .env
     environment:
       - CONFIG_PATH=./config/local.yaml
+      - APP_SECRET=${APP_SECRET}
     volumes:
       - ./LibAssistant-api/config:/app/config:ro
     ports:

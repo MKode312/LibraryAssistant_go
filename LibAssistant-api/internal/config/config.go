@@ -19,6 +19,7 @@ type HTTPServer struct {
 	Address     string        `yaml:"address" env-required:"true"`
 	Timeout     time.Duration `yaml:"timeout" env-default:"4s"`
 	IdleTimeout time.Duration `yaml:"idle_timeout" env-default:"60s"`
+	Shutdowntimeout time.Duration `yaml:"shutdown_timeout" env-default:"10s"`
 }
 
 type Client struct {
@@ -30,6 +31,7 @@ type Client struct {
 
 type ClientsConfig struct {
 	SSO Client `yaml:"sso"`
+	Books Client `yaml:"books"`
 }
 
 func MustLoad() *Config {
