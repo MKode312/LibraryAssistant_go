@@ -137,6 +137,19 @@ services:
       - shared
     restart: unless-stopped
 
+  students:
+    build:
+      context: ./LibAssistant-students
+      dockerfile: Dockerfile
+    container_name: students 
+    ports:
+      - "50052:50052"
+    volumes:
+      - ./LibAssistant-students:/app/storage
+    networks:
+      - shared
+    restart: unless-stopped
+
 volumes:
   sso_postgres_data:
   books_postgres_data:
