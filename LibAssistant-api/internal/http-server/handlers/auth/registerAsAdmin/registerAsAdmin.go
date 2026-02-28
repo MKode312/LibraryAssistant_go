@@ -22,7 +22,7 @@ type Request struct {
 
 type Response struct {
 	resp.Response
-	UserID int64 `json:"userID"`
+	UserID string `json:"userID"`
 }
 
 func New(ctx context.Context, log *slog.Logger, ssoClient *ssogrpc.Client) http.HandlerFunc {
@@ -116,7 +116,7 @@ func New(ctx context.Context, log *slog.Logger, ssoClient *ssogrpc.Client) http.
 			return
 		}
 
-		log.Info("admin registered", slog.Int64("id", userID))
+		log.Info("admin registered", slog.String("id", userID))
 
 		w.WriteHeader(http.StatusCreated)
 

@@ -125,7 +125,7 @@ func TestIsAdmin_True(t *testing.T) {
 func TestIsAdmin_NotFound(t *testing.T) {
 	ctx, st := suite.New(t)
 
-	userID := randomFakeID()
+	userID := gofakeit.UUID()
 
 	respIsAdmin, err := st.AuthClient.IsAdmin(ctx, &ssov1.IsAdminRequest{
 		UserId: userID,

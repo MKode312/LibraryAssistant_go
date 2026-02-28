@@ -23,19 +23,17 @@ service IssueService {
 }
 
 message IssueRequest {
-  int64 book_id = 1;
-  int64 student_id = 2;
+  string book_id = 1;
+  string student_id = 2;
   int32 days_due = 3; // optional, default 14
 }
 
 message IssueResponse {
-  bool success = 1;
-  string message = 2;
-  int64 issue_id = 3;
+  string issue_id = 1;
 }
 
 message CheckAvailabilityRequest {
-  int64 book_id = 1;
+  string book_id = 1;
 }
 
 message CheckAvailabilityResponse {
@@ -44,23 +42,19 @@ message CheckAvailabilityResponse {
 }
 
 message ReturnRequest {
-  int64 issue_id = 1;
+  string issue_id = 1;
 }
 
 message ReturnResponse {
-  bool success = 1;
-  string message = 2;
-  int32 fine = 3;
+  int32 fine = 1;
 }
 
 message ReportLostRequest {
-  int64 issue_id = 1;
+  string issue_id = 1;
 }
 
 message ReportLostResponse {
-  bool success = 1;
-  string message = 2;
-  int32 fine = 3;
+  int32 fine = 1;
 }
 
 message GetAllDebtsRequest {}
@@ -79,10 +73,10 @@ message ViewDebtorsResponse {
 }
 
 message Debt {
-  int64 issue_id = 1;
-  int64 student_id = 2;
+  string issue_id = 1;
+  string student_id = 2;
   string student_name = 3;
-  int64 book_id = 4;
+  string book_id = 4;
   string book_title = 5;
   google.protobuf.Timestamp due_date = 6;
   int32 overdue_days = 7;
@@ -95,7 +89,5 @@ message AddBookRequest {
 }
 
 message AddBookResponse {
-  bool success = 1;
-  string message = 2;
-  int64 book_id = 3;
+  string book_id = 1;
 }

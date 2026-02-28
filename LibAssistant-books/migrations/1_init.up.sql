@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS books (
-    bookID TEXT NOT NULL UNIQUE,
+    bookID TEXT PRIMARY KEY,
     genre TEXT NOT NULL,
     title TEXT NOT NULL UNIQUE,
     quantity INTEGER

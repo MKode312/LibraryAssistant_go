@@ -25,7 +25,7 @@ require (
 )
 
 require (
-	github.com/MKode312/protos v0.1.8
+	github.com/MKode312/protos v0.2.3
 	golang.org/x/net v0.43.0 // indirect
 	golang.org/x/text v0.29.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250804133106-a7a43d27e69b // indirect

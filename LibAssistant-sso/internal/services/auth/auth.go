@@ -24,13 +24,14 @@ type Auth struct {
 }
 
 type UserSaver interface {
-	SaveUser(ctx context.Context, email string, passHash []byte) (uid int64, err error)
-	SaveAdmin(ctx context.Context, email string, passHash []byte) (uid int64, err error)
+	SaveUser(ctx context.Context, email string, passHash []byte) (uid string, err error)
+	SaveAdmin(ctx context.Context, email string, passHash []byte) (uid string, err error)
 }
 
 type UserProvider interface {
 	User(ctx context.Context, email string) (models.User, error)
-	IsAdmin(ctx context.Context, userID int64) (bool, error)
+	IsAdmin(ctx context.Context, userID string) (bool, error)
+	DeleteUserByID(ctx context.Context, userID string) (bool, error)
 }
 
 var (
@@ -87,7 +88,7 @@ func (a *Auth) Login(ctx context.Context, email string, password string) (string
 	return token, nil
 }
 
-func (a *Auth) RegisterNewUser(ctx context.Context, email string, password string) (int64, error) {
+func (a *Auth) RegisterNewUser(ctx context.Context, email string, password string) (string, error) {
 	const op = "auth.RegisterNewUser"
 
 	log := a.log.With(slog.String("op", op))
@@ -98,7 +99,7 @@ func (a *Auth) RegisterNewUser(ctx context.Context, email string, password strin
 	if err != nil {
 		log.Error("failed to generate password hash", sl.Err(err))
 
-		return 0, fmt.Errorf("%s: %w", op, err)
+		return "", fmt.Errorf("%s: %w", op, err)
 	}
 
 	id, err := a.userSaver.SaveUser(ctx, email, passHash)
@@ -106,11 +107,11 @@ func (a *Auth) RegisterNewUser(ctx context.Context, email string, password strin
 		if errors.Is(err, storage.ErrUserExists) {
 			log.Error("user already exists", sl.Err(err))
 
-			return 0, fmt.Errorf("%s: %w", op, ErrUserExists)
+			return "", fmt.Errorf("%s: %w", op, ErrUserExists)
 		}
 		log.Error("failed to save user", sl.Err(err))
 
-		return 0, fmt.Errorf("%s: %w", op, err)
+		return "", fmt.Errorf("%s: %w", op, err)
 	}
 
 	log.Info("user registered")
@@ -118,7 +119,35 @@ func (a *Auth) RegisterNewUser(ctx context.Context, email string, password strin
 	return id, nil
 }
 
-func (a *Auth) RegisterNewAdmin(ctx context.Context, email string, password string, admin_secret string) (int64, error) {
+func (a *Auth) DeleteUserByID(ctx context.Context, userID string) (bool, error) {
+	const op = "auth.DeleteUserByID"
+
+	log := a.log.With(slog.String("op", op))
+
+	log.Info("deleting user")
+
+	success, err := a.userProvider.DeleteUserByID(ctx, userID)
+	if err != nil {
+		if errors.Is(err, storage.ErrUserNotFound) {
+			log.Error("user not found", sl.Err(err))
+
+			return false, fmt.Errorf("%s: %w", op, ErrUserNotFound)
+		}
+		log.Error("failed to delete user", sl.Err(err))
+
+		return false, fmt.Errorf("%s: %w", op, err)
+	}
+
+	if success {
+		log.Info("user deleted successfully")
+	} else {
+		log.Warn("user was not deleted!")
+	}
+
+	return success, nil
+}
+
+func (a *Auth) RegisterNewAdmin(ctx context.Context, email string, password string, admin_secret string) (string, error) {
 	const op = "auth.RegisterNewAdmin"
 
 	log := a.log.With(slog.String("op", op))
@@ -129,31 +158,31 @@ func (a *Auth) RegisterNewAdmin(ctx context.Context, email string, password stri
 	if !ok {
 		log.Error("failed to find admin_secret")
 
-		return 0, fmt.Errorf("%s: %w", op, errors.New("admin_key not found"))
+		return "", fmt.Errorf("%s: %w", op, errors.New("admin_key not found"))
 	}
 
 	if admin_secret != adminPswd {
 		log.Error("wrong admin secret key")
 
-		return 0, fmt.Errorf("%s: %w", op, ErrWrongAdminSecret)
+		return "", fmt.Errorf("%s: %w", op, ErrWrongAdminSecret)
 	}
 
 	passHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		log.Error("failed to generate password hash", sl.Err(err))
 
-		return 0, fmt.Errorf("%s: %w", op, err)
+		return "", fmt.Errorf("%s: %w", op, err)
 	}
 
 	id, err := a.userSaver.SaveAdmin(ctx, email, passHash)
 	if err != nil {
 		if errors.Is(err, storage.ErrUserExists) {
 			log.Error("user already exists", sl.Err(err))
-			return 0, fmt.Errorf("%s: %w", op, ErrUserExists)
+			return "", fmt.Errorf("%s: %w", op, ErrUserExists)
 		}
 		log.Error("failed to save admin", sl.Err(err))
 
-		return 0, fmt.Errorf("%s: %w", op, err)
+		return "", fmt.Errorf("%s: %w", op, err)
 	}
 
 	log.Info("admin registered")
@@ -161,7 +190,7 @@ func (a *Auth) RegisterNewAdmin(ctx context.Context, email string, password stri
 	return id, nil
 }
 
-func (a *Auth) IsAdmin(ctx context.Context, userID int64) (bool, error) {
+func (a *Auth) IsAdmin(ctx context.Context, userID string) (bool, error) {
 	const op = "auth.IsAdmin"
 
 	log := a.log.With(slog.String("op", op))

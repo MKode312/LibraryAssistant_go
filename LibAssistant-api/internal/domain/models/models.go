@@ -6,3 +6,10 @@ type Book struct {
 	Genre           string
 	AvailableCopies int64
 }
+
+type Student struct {
+	ID       string
+	FullName string
+	Grade    int32
+	Letter   string
+}

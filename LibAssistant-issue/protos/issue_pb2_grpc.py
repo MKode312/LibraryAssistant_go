@@ -26,7 +26,8 @@ if _version_not_supported:
 
 
 class IssueServiceStub(object):
-    """Missing associated documentation comment in .proto file."""
+    """Issue books, return them, report loss and viewing debtors
+    """
 
     def __init__(self, channel):
         """Constructor.
@@ -64,43 +65,62 @@ class IssueServiceStub(object):
                 request_serializer=issue__pb2.ViewDebtorsRequest.SerializeToString,
                 response_deserializer=issue__pb2.ViewDebtorsResponse.FromString,
                 _registered_method=True)
+        self.AddBook = channel.unary_unary(
+                '/issue.IssueService/AddBook',
+                request_serializer=issue__pb2.AddBookRequest.SerializeToString,
+                response_deserializer=issue__pb2.AddBookResponse.FromString,
+                _registered_method=True)
 
 
 class IssueServiceServicer(object):
-    """Missing associated documentation comment in .proto file."""
+    """Issue books, return them, report loss and viewing debtors
+    """
 
     def IssueBook(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Issue book by it's id and student's id for the fixed amount of days
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def CheckAvailability(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Check the availability of the book to be issued
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def ReturnBook(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Return book after issuing it
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def ReportLost(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Report loss of the book
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetAllDebts(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Get all the saved debts 
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def ViewDebtors(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """View all the saved debtors 
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def AddBook(self, request, context):
+        """Take a book from the storage of books service
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -138,6 +158,11 @@ def add_IssueServiceServicer_to_server(servicer, server):
                     request_deserializer=issue__pb2.ViewDebtorsRequest.FromString,
                     response_serializer=issue__pb2.ViewDebtorsResponse.SerializeToString,
             ),
+            'AddBook': grpc.unary_unary_rpc_method_handler(
+                    servicer.AddBook,
+                    request_deserializer=issue__pb2.AddBookRequest.FromString,
+                    response_serializer=issue__pb2.AddBookResponse.SerializeToString,
+            ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
             'issue.IssueService', rpc_method_handlers)
@@ -147,7 +172,8 @@ def add_IssueServiceServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class IssueService(object):
-    """Missing associated documentation comment in .proto file."""
+    """Issue books, return them, report loss and viewing debtors
+    """
 
     @staticmethod
     def IssueBook(request,
@@ -301,6 +327,33 @@ class IssueService(object):
             '/issue.IssueService/ViewDebtors',
             issue__pb2.ViewDebtorsRequest.SerializeToString,
             issue__pb2.ViewDebtorsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def AddBook(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/issue.IssueService/AddBook',
+            issue__pb2.AddBookRequest.SerializeToString,
+            issue__pb2.AddBookResponse.FromString,
             options,
             channel_credentials,
             insecure,

@@ -2,11 +2,11 @@
 import json
 from datetime import datetime, timedelta
 
-BASE_DIR = os.path.dirname(__file__)
-CACHE_DIR = os.path.join(BASE_DIR, 'cache')
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+CACHE_DIR = os.path.join(PROJECT_ROOT, 'cache')
 os.makedirs(CACHE_DIR, exist_ok=True)
 DEBTORS_CACHE = os.path.join(CACHE_DIR, 'debtors_cache.json')
-DEFAULT_TTL = 60  # seconds
+DEFAULT_TTL = 60
 
 
 def load_debtors_cache():

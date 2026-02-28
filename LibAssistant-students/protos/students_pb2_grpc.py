@@ -39,10 +39,30 @@ class StudentsServiceStub(object):
                 request_serializer=students__pb2.CreateStudentRequest.SerializeToString,
                 response_deserializer=students__pb2.CreateStudentResponse.FromString,
                 _registered_method=True)
-        self.DeleteStudentByID = channel.unary_unary(
-                '/students.StudentsService/DeleteStudentByID',
-                request_serializer=students__pb2.DeleteStudentByIDRequest.SerializeToString,
-                response_deserializer=students__pb2.DeleteStudentByIDResponse.FromString,
+        self.GetStudentByID = channel.unary_unary(
+                '/students.StudentsService/GetStudentByID',
+                request_serializer=students__pb2.GetStudentByIDRequest.SerializeToString,
+                response_deserializer=students__pb2.GetStudentByIDResponse.FromString,
+                _registered_method=True)
+        self.GetStudentByFullName = channel.unary_unary(
+                '/students.StudentsService/GetStudentByFullName',
+                request_serializer=students__pb2.GetStudentByFullNameRequest.SerializeToString,
+                response_deserializer=students__pb2.GetStudentByFullNameResponse.FromString,
+                _registered_method=True)
+        self.GetClass = channel.unary_unary(
+                '/students.StudentsService/GetClass',
+                request_serializer=students__pb2.GetClassRequest.SerializeToString,
+                response_deserializer=students__pb2.GetClassResponse.FromString,
+                _registered_method=True)
+        self.GetParallel = channel.unary_unary(
+                '/students.StudentsService/GetParallel',
+                request_serializer=students__pb2.GetParallelRequest.SerializeToString,
+                response_deserializer=students__pb2.GetParallelResponse.FromString,
+                _registered_method=True)
+        self.GetStudentStats = channel.unary_unary(
+                '/students.StudentsService/GetStudentStats',
+                request_serializer=students__pb2.GetStudentStatsRequest.SerializeToString,
+                response_deserializer=students__pb2.GetStudentStatsResponse.FromString,
                 _registered_method=True)
         self.UpdateFullNameOfStudent = channel.unary_unary(
                 '/students.StudentsService/UpdateFullNameOfStudent',
@@ -59,30 +79,10 @@ class StudentsServiceStub(object):
                 request_serializer=students__pb2.UpdateLetterOfStudentRequest.SerializeToString,
                 response_deserializer=students__pb2.UpdateLetterOfStudentResponse.FromString,
                 _registered_method=True)
-        self.GetStudentByID = channel.unary_unary(
-                '/students.StudentsService/GetStudentByID',
-                request_serializer=students__pb2.GetStudentByIDRequest.SerializeToString,
-                response_deserializer=students__pb2.GetStudentByIDResponse.FromString,
-                _registered_method=True)
-        self.GetStudentByFullName = channel.unary_unary(
-                '/students.StudentsService/GetStudentByFullName',
-                request_serializer=students__pb2.GetStudentByFullNameRequest.SerializeToString,
-                response_deserializer=students__pb2.GetStudentByFullNameResponse.FromString,
-                _registered_method=True)
-        self.GetGrade = channel.unary_unary(
-                '/students.StudentsService/GetGrade',
-                request_serializer=students__pb2.GetGradeRequest.SerializeToString,
-                response_deserializer=students__pb2.GetGradeResponse.FromString,
-                _registered_method=True)
-        self.GetParallel = channel.unary_unary(
-                '/students.StudentsService/GetParallel',
-                request_serializer=students__pb2.GetParallelRequest.SerializeToString,
-                response_deserializer=students__pb2.GetParallelResponse.FromString,
-                _registered_method=True)
-        self.GetStudentStats = channel.unary_unary(
-                '/students.StudentsService/GetStudentStats',
-                request_serializer=students__pb2.GetStudentStatsRequest.SerializeToString,
-                response_deserializer=students__pb2.GetStudentStatsResponse.FromString,
+        self.DeleteStudentByID = channel.unary_unary(
+                '/students.StudentsService/DeleteStudentByID',
+                request_serializer=students__pb2.DeleteStudentByIDRequest.SerializeToString,
+                response_deserializer=students__pb2.DeleteStudentByIDResponse.FromString,
                 _registered_method=True)
 
 
@@ -95,7 +95,31 @@ class StudentsServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def DeleteStudentByID(self, request, context):
+    def GetStudentByID(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetStudentByFullName(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetClass(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetParallel(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetStudentStats(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -119,31 +143,7 @@ class StudentsServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def GetStudentByID(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def GetStudentByFullName(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def GetGrade(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def GetParallel(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def GetStudentStats(self, request, context):
+    def DeleteStudentByID(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -157,10 +157,30 @@ def add_StudentsServiceServicer_to_server(servicer, server):
                     request_deserializer=students__pb2.CreateStudentRequest.FromString,
                     response_serializer=students__pb2.CreateStudentResponse.SerializeToString,
             ),
-            'DeleteStudentByID': grpc.unary_unary_rpc_method_handler(
-                    servicer.DeleteStudentByID,
-                    request_deserializer=students__pb2.DeleteStudentByIDRequest.FromString,
-                    response_serializer=students__pb2.DeleteStudentByIDResponse.SerializeToString,
+            'GetStudentByID': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetStudentByID,
+                    request_deserializer=students__pb2.GetStudentByIDRequest.FromString,
+                    response_serializer=students__pb2.GetStudentByIDResponse.SerializeToString,
+            ),
+            'GetStudentByFullName': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetStudentByFullName,
+                    request_deserializer=students__pb2.GetStudentByFullNameRequest.FromString,
+                    response_serializer=students__pb2.GetStudentByFullNameResponse.SerializeToString,
+            ),
+            'GetClass': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetClass,
+                    request_deserializer=students__pb2.GetClassRequest.FromString,
+                    response_serializer=students__pb2.GetClassResponse.SerializeToString,
+            ),
+            'GetParallel': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetParallel,
+                    request_deserializer=students__pb2.GetParallelRequest.FromString,
+                    response_serializer=students__pb2.GetParallelResponse.SerializeToString,
+            ),
+            'GetStudentStats': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetStudentStats,
+                    request_deserializer=students__pb2.GetStudentStatsRequest.FromString,
+                    response_serializer=students__pb2.GetStudentStatsResponse.SerializeToString,
             ),
             'UpdateFullNameOfStudent': grpc.unary_unary_rpc_method_handler(
                     servicer.UpdateFullNameOfStudent,
@@ -177,30 +197,10 @@ def add_StudentsServiceServicer_to_server(servicer, server):
                     request_deserializer=students__pb2.UpdateLetterOfStudentRequest.FromString,
                     response_serializer=students__pb2.UpdateLetterOfStudentResponse.SerializeToString,
             ),
-            'GetStudentByID': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetStudentByID,
-                    request_deserializer=students__pb2.GetStudentByIDRequest.FromString,
-                    response_serializer=students__pb2.GetStudentByIDResponse.SerializeToString,
-            ),
-            'GetStudentByFullName': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetStudentByFullName,
-                    request_deserializer=students__pb2.GetStudentByFullNameRequest.FromString,
-                    response_serializer=students__pb2.GetStudentByFullNameResponse.SerializeToString,
-            ),
-            'GetGrade': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetGrade,
-                    request_deserializer=students__pb2.GetGradeRequest.FromString,
-                    response_serializer=students__pb2.GetGradeResponse.SerializeToString,
-            ),
-            'GetParallel': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetParallel,
-                    request_deserializer=students__pb2.GetParallelRequest.FromString,
-                    response_serializer=students__pb2.GetParallelResponse.SerializeToString,
-            ),
-            'GetStudentStats': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetStudentStats,
-                    request_deserializer=students__pb2.GetStudentStatsRequest.FromString,
-                    response_serializer=students__pb2.GetStudentStatsResponse.SerializeToString,
+            'DeleteStudentByID': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeleteStudentByID,
+                    request_deserializer=students__pb2.DeleteStudentByIDRequest.FromString,
+                    response_serializer=students__pb2.DeleteStudentByIDResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -241,7 +241,7 @@ class StudentsService(object):
             _registered_method=True)
 
     @staticmethod
-    def DeleteStudentByID(request,
+    def GetStudentByID(request,
             target,
             options=(),
             channel_credentials=None,
@@ -254,9 +254,117 @@ class StudentsService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/students.StudentsService/DeleteStudentByID',
-            students__pb2.DeleteStudentByIDRequest.SerializeToString,
-            students__pb2.DeleteStudentByIDResponse.FromString,
+            '/students.StudentsService/GetStudentByID',
+            students__pb2.GetStudentByIDRequest.SerializeToString,
+            students__pb2.GetStudentByIDResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetStudentByFullName(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/students.StudentsService/GetStudentByFullName',
+            students__pb2.GetStudentByFullNameRequest.SerializeToString,
+            students__pb2.GetStudentByFullNameResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetClass(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/students.StudentsService/GetClass',
+            students__pb2.GetClassRequest.SerializeToString,
+            students__pb2.GetClassResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetParallel(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/students.StudentsService/GetParallel',
+            students__pb2.GetParallelRequest.SerializeToString,
+            students__pb2.GetParallelResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetStudentStats(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/students.StudentsService/GetStudentStats',
+            students__pb2.GetStudentStatsRequest.SerializeToString,
+            students__pb2.GetStudentStatsResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -349,7 +457,7 @@ class StudentsService(object):
             _registered_method=True)
 
     @staticmethod
-    def GetStudentByID(request,
+    def DeleteStudentByID(request,
             target,
             options=(),
             channel_credentials=None,
@@ -362,117 +470,9 @@ class StudentsService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/students.StudentsService/GetStudentByID',
-            students__pb2.GetStudentByIDRequest.SerializeToString,
-            students__pb2.GetStudentByIDResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def GetStudentByFullName(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/students.StudentsService/GetStudentByFullName',
-            students__pb2.GetStudentByFullNameRequest.SerializeToString,
-            students__pb2.GetStudentByFullNameResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def GetGrade(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/students.StudentsService/GetGrade',
-            students__pb2.GetGradeRequest.SerializeToString,
-            students__pb2.GetGradeResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def GetParallel(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/students.StudentsService/GetParallel',
-            students__pb2.GetParallelRequest.SerializeToString,
-            students__pb2.GetParallelResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def GetStudentStats(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/students.StudentsService/GetStudentStats',
-            students__pb2.GetStudentStatsRequest.SerializeToString,
-            students__pb2.GetStudentStatsResponse.FromString,
+            '/students.StudentsService/DeleteStudentByID',
+            students__pb2.DeleteStudentByIDRequest.SerializeToString,
+            students__pb2.DeleteStudentByIDResponse.FromString,
             options,
             channel_credentials,
             insecure,

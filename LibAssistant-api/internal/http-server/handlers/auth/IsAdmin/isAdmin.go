@@ -8,7 +8,6 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
-	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -16,7 +15,7 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type Request struct {}
+type Request struct{}
 
 type Response struct {
 	resp.Response
@@ -53,15 +52,8 @@ func New(ctx context.Context, log *slog.Logger, ssoClient *ssogrpc.Client) http.
 		}
 
 		userID := chi.URLParam(r, "userID")
-		numUserID, err := strconv.Atoi(userID)
-		if err != nil {
-			log.Error("internal error", sl.Err(err))
-			w.WriteHeader(http.StatusInternalServerError)
-			render.JSON(w, r, resp.Error("Unknown error"))
-			return
-		}
 
-		isAdmin, err := ssoClient.IsAdmin(ctx, int64(numUserID))
+		isAdmin, err := ssoClient.IsAdmin(ctx, userID)
 		if err != nil {
 			if errors.Is(err, ssogrpc.ErrInvalidCredentials) {
 				log.Error("invalid credentials")

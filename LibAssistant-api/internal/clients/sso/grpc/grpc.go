@@ -58,7 +58,8 @@ func New(ctx context.Context, log *slog.Logger, addr string, timeout time.Durati
 	}, nil
 }
 
-func (c *Client) RegisterNewUser(ctx context.Context, email string, password string) (int64, error) {
+func (c *Client) RegisterNewUser(ctx context.Context, email string, password string) (string, error) {
+	const op = "sso.grpc.RegisterNewUser"
 
 	resp, err := c.api.Register(ctx, &ssov1.RegisterRequest{
 		Email:    email,
@@ -68,20 +69,21 @@ func (c *Client) RegisterNewUser(ctx context.Context, email string, password str
 		st, ok := status.FromError(err)
 		if ok {
 			if st.Code() == codes.InvalidArgument {
-				return 0, ErrInvalidCredentials
+				return "", fmt.Errorf("%s: %w: %s", op, ErrInvalidCredentials, st.Message())
 			}
 
 			if st.Code() == codes.AlreadyExists {
-				return 0, ErrUserExists
+				return "", fmt.Errorf("%s: %w", op, ErrUserExists)
 			}
 		}
-		return 0, ErrInternal
+		return "", fmt.Errorf("%s: %w", op, ErrInternal)
 	}
 
 	return resp.GetUserId(), nil
 }
 
-func (c *Client) RegisterNewAdmin(ctx context.Context, email, passowrd, admin_secret string) (int64, error) {
+func (c *Client) RegisterNewAdmin(ctx context.Context, email, passowrd, admin_secret string) (string, error) {
+	const op = "sso.grpc.RegisterNewAdmin"
 
 	resp, err := c.api.RegisterAsAdmin(ctx, &ssov1.RegisterAsAdminRequest{
 		Email:       email,
@@ -92,24 +94,26 @@ func (c *Client) RegisterNewAdmin(ctx context.Context, email, passowrd, admin_se
 		st, ok := status.FromError(err)
 		if ok {
 			if st.Code() == codes.PermissionDenied {
-				return 0, ErrWrongAdminSecret
+				return "", fmt.Errorf("%s: %w", op, ErrWrongAdminSecret)
 			}
 
 			if st.Code() == codes.AlreadyExists {
-				return 0, ErrUserExists
+				return "", fmt.Errorf("%s: %w", op, ErrUserExists)
 			}
 
 			if st.Code() == codes.InvalidArgument {
-				return 0, ErrInvalidCredentials
+				return "", fmt.Errorf("%s: %w: %s", op, ErrInvalidCredentials, st.Message())
 			}
 		}
-		return 0, ErrInternal
+		return "", fmt.Errorf("%s: %w", op, ErrInternal)
 	}
 
 	return resp.GetUserId(), nil
 }
 
 func (c *Client) Login(ctx context.Context, email, password string) (string, error) {
+	const op = "sso.grpc.Login"
+
 	resp, err := c.api.Login(ctx, &ssov1.LoginRequest{
 		Email:    email,
 		Password: password,
@@ -118,17 +122,39 @@ func (c *Client) Login(ctx context.Context, email, password string) (string, err
 		st, ok := status.FromError(err)
 		if ok {
 			if st.Code() == codes.InvalidArgument {
-				return "", ErrInvalidCredentials
+				return "", fmt.Errorf("%s: %w: %s", op, ErrInvalidCredentials, st.Message())
 			}
 
-			return "", ErrInternal
+			return "", fmt.Errorf("%s: %w", op, ErrInternal)
 		}
 	}
 
 	return resp.GetToken(), nil
 }
 
-func (c *Client) IsAdmin(ctx context.Context, userID int64) (bool, error) {
+func (c *Client) DeleteUserByID(ctx context.Context, userID string) (bool, error) {
+	const op = "sso.grpc.DeleteUserByID"
+
+	resp, err := c.api.DeleteUserByID(ctx, &ssov1.DeleteUserByIDRequest{
+		UserId: userID,
+	})
+	if err != nil {
+		st, ok := status.FromError(err)
+		if ok {
+			if st.Code() == codes.InvalidArgument {
+				return false, fmt.Errorf("%s: %w: %s", op, ErrInvalidCredentials, st.Message())
+			}
+			if st.Code() == codes.NotFound {
+				return false, fmt.Errorf("%s: %w", op, ErrUserNotFound)
+			}
+		}
+		return false, fmt.Errorf("%s: %w", op, ErrInternal)
+	}
+
+	return resp.GetSuccess(), nil
+}
+func (c *Client) IsAdmin(ctx context.Context, userID string) (bool, error) {
+	const op = "sso.grpc.IsAdmin"
 
 	resp, err := c.api.IsAdmin(ctx, &ssov1.IsAdminRequest{
 		UserId: userID,
@@ -136,15 +162,14 @@ func (c *Client) IsAdmin(ctx context.Context, userID int64) (bool, error) {
 	if err != nil {
 		st, ok := status.FromError(err)
 		if ok {
-			if st.Code() == codes.NotFound {
-				return false, ErrUserNotFound
-			}
-
 			if st.Code() == codes.InvalidArgument {
-				return false, ErrInvalidCredentials
+				return false, fmt.Errorf("%s: %w: %s", op, ErrInvalidCredentials, st.Message())
+			}
+			if st.Code() == codes.NotFound {
+				return false, fmt.Errorf("%s: %w", op, ErrUserNotFound)
 			}
 		}
-		return false, ErrInternal
+		return false, fmt.Errorf("%s: %w", op, ErrInternal)
 	}
 
 	return resp.GetIsAdmin(), nil

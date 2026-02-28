@@ -3,10 +3,12 @@ package main
 import (
 	booksgrpc "LibAssistant_api/internal/clients/books/grpc"
 	ssogrpc "LibAssistant_api/internal/clients/sso/grpc"
+	studentsgrpc "LibAssistant_api/internal/clients/students/grpc"
 	"LibAssistant_api/internal/config"
 	isAdmin "LibAssistant_api/internal/http-server/handlers/auth/IsAdmin"
 	"LibAssistant_api/internal/http-server/handlers/auth/login"
-	"LibAssistant_api/internal/http-server/handlers/auth/register"
+	register "LibAssistant_api/internal/http-server/handlers/auth/registerAndCreateStudent"
+
 	"LibAssistant_api/internal/http-server/handlers/auth/registerAsAdmin"
 	addbook "LibAssistant_api/internal/http-server/handlers/books/addBook"
 	addcopies "LibAssistant_api/internal/http-server/handlers/books/addCopies"
@@ -65,12 +67,18 @@ func main() {
 		os.Exit(1)
 	}
 
+	studentsClient, err := studentsgrpc.New(context.Background(), log, cfg.Clients.Students.Address, cfg.Clients.Students.Timeout, cfg.Clients.Students.RetriesCount)
+	if err != nil {
+		log.Error("failed to init students client", sl.Err(err))
+		os.Exit(1)
+	}
+
 	jwtMiddleware := MWJwt.New(log)
 
-	router.Post("/register", register.New(context.Background(), log, ssoClient))
+	router.Post("/register", register.New(context.Background(), log, ssoClient, studentsClient))
 	router.Post("/login", login.New(context.Background(), log, ssoClient))
 	router.Post("/registerAsAdmin", registerAsAdmin.New(context.Background(), log, ssoClient))
-	
+
 	router.Group(func(r chi.Router) {
 		r.Use(jwtMiddleware)
 		r.Get("/isAdmin/{userID}", isAdmin.New(context.Background(), log, ssoClient))
@@ -84,25 +92,23 @@ func main() {
 		r.Get("/books/{genre}", filterbooksbygenrelist.New(context.Background(), log, booksClient))
 	})
 
-
 	log.Info("starting http-server", slog.String("address", cfg.HTTPServer.Address))
 
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
-
 	srv := &http.Server{
-		Addr: cfg.HTTPServer.Address,
-		Handler: router,
-		ReadTimeout: cfg.HTTPServer.Timeout,
+		Addr:         cfg.HTTPServer.Address,
+		Handler:      router,
+		ReadTimeout:  cfg.HTTPServer.Timeout,
 		WriteTimeout: cfg.HTTPServer.Timeout,
-		IdleTimeout: cfg.HTTPServer.IdleTimeout,
+		IdleTimeout:  cfg.HTTPServer.IdleTimeout,
 	}
 
 	go func() {
 		if err := srv.ListenAndServe(); err != nil {
-		log.Error("failed to start server")
-	    }
+			log.Error("failed to start server")
+		}
 	}()
 
 	log.Info("http-server strarted")

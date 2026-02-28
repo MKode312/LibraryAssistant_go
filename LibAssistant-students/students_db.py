@@ -1,11 +1,10 @@
 import sqlite3
 import os
 
-DB_PATH = "/app/storage"
+DB_PATH = os.path.dirname(__file__)
 
 def get_connection():
-    os.makedirs(DB_PATH, exist_ok=True)
-    return sqlite3.connect(os.path.join(DB_PATH, 'students_service.db'))
+    return sqlite3.connect(f'{DB_PATH}/students_service.db')
 
 def init_db():
     with get_connection() as con:

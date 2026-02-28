@@ -13,9 +13,10 @@ import (
 
 type Auth interface {
 	Login(ctx context.Context, email string, password string) (token string, err error)
-	RegisterNewUser(ctx context.Context, email string, password string) (userID int64, err error)
-	RegisterNewAdmin(ctx context.Context, email string, password string, admin_secret string) (userID int64, err error)
-	IsAdmin(ctx context.Context, userID int64) (bool, error)
+	RegisterNewUser(ctx context.Context, email string, password string) (userID string, err error)
+	DeleteUserByID(ctx context.Context, userID string) (bool, error)
+	RegisterNewAdmin(ctx context.Context, email string, password string, admin_secret string) (userID string, err error)
+	IsAdmin(ctx context.Context, userID string) (bool, error)
 }
 
 type serverAPI struct {
@@ -66,6 +67,24 @@ func (s *serverAPI) Register(ctx context.Context, req *ssov1.RegisterRequest) (*
 
 	return &ssov1.RegisterResponse{
 		UserId: userID,
+	}, nil
+}
+
+func (s *serverAPI) DeleteUserByID(ctx context.Context, req *ssov1.DeleteUserByIDRequest) (*ssov1.DeleteUserByIDResponse, error) {
+	if err := validateDeleteUserByID(req); err != nil {
+		return nil, err
+	}
+
+	success, err := s.auth.DeleteUserByID(ctx, req.GetUserId())
+	if err != nil {
+		if errors.Is(err, auth.ErrUserNotFound) {
+			return nil, status.Error(codes.NotFound, "user not found")
+		}
+		return nil, status.Error(codes.Internal, "internal error")
+	}
+
+	return &ssov1.DeleteUserByIDResponse{
+		Success: success,
 	}, nil
 }
 
@@ -140,6 +159,14 @@ func validateRegister(req *ssov1.RegisterRequest) error {
 	return nil
 }
 
+func validateDeleteUserByID(req *ssov1.DeleteUserByIDRequest) error {
+	if req.GetUserId() == "" {
+		return status.Error(codes.InvalidArgument, "user ID is required")
+	}
+
+	return nil
+}
+
 func validateRegisterAsAdmin(req *ssov1.RegisterAsAdminRequest) error {
 	if req.GetEmail() == "" {
 		return status.Error(codes.InvalidArgument, "email is required")
@@ -157,7 +184,7 @@ func validateRegisterAsAdmin(req *ssov1.RegisterAsAdminRequest) error {
 }
 
 func validateIsAdmin(req *ssov1.IsAdminRequest) error {
-	if req.GetUserId() == 0 {
+	if req.GetUserId() == "" {
 		return status.Error(codes.InvalidArgument, "secret admin password is required")
 	}
 

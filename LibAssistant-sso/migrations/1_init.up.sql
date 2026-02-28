@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS users
 (
-    id        BIGINT PRIMARY KEY,
+    id        TEXT PRIMARY KEY,
     email     TEXT NOT NULL UNIQUE,
     pass_hash BYTEA NOT NULL
 );

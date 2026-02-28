@@ -1,0 +1,115 @@
+syntax = "proto3";
+
+package books;
+
+option go_package = "mkode.books.v1;booksv1";
+
+service Books {
+    rpc AddBook(AddBookRequest) returns (AddBookResponse);
+    rpc TakeBook(TakeBookRequest) returns (TakeBookResponse);
+    rpc GetBookByID(GetBookByIDRequest) returns (GetBookByIDResponse);
+    rpc GetBookByTitle(GetBookByTitleRequest) returns (GetBookByTitleResponse);
+    rpc DeleteBook(DeleteBookRequest) returns (DeleteBookResponse);
+    rpc AddCopies(AddCopiesRequest) returns (AddCopiesResponse);
+    rpc GetListOfBooks(GetListOfBooksRequest) returns (GetListOfBooksResponse);
+    rpc FilterBooksByGenreList(FilterBooksByGenreListRequest) returns (FilterBooksByGenreListResponse);
+}
+
+//-----Add Book-----//
+message AddBookRequest {
+    string genre = 1;
+    string title = 2;
+    int64 quantity = 3;
+}
+message AddBookResponse {
+    string book_id = 1;
+}
+//-----Add Book-----//
+
+
+
+//-----Take Book-----//
+message TakeBookRequest {
+    string book_id = 1;
+    int64 take_copies = 2;
+}
+message TakeBookResponse {
+    bool success = 1;
+}
+//-----Take Book-----//
+
+
+
+//-----Get Book By Ttile-----//
+message GetBookByTitleRequest {
+    string title = 1;
+}
+message GetBookByTitleResponse {
+    Book book = 1;
+}
+//-----Get Book By Ttile-----//
+
+
+
+//-----Get Book By ID-----//
+message GetBookByIDRequest {
+    string book_id = 1;
+}
+message GetBookByIDResponse {
+    Book book = 1;
+}
+//-----Get Book By ID-----//
+
+
+
+//-----Delete Book-----//
+message DeleteBookRequest {
+    string book_id = 1;
+}
+message DeleteBookResponse {
+    bool success = 1;
+}
+//-----Delete Book-----//
+
+
+//-----Add Copies-----//
+message AddCopiesRequest {
+    string book_id = 1;
+    int64 copies_to_add = 2;
+}
+message AddCopiesResponse {
+    bool success = 1;
+}
+//-----Add Copies-----//
+
+
+
+//-----Get List Of Books-----//
+message GetListOfBooksRequest {}
+message GetListOfBooksResponse {
+    repeated Book books = 1;
+}
+//-----Get List Of Books-----//
+
+
+
+//-----Filter Books By Genre-----//
+message FilterBooksByGenreListRequest {
+    string genre = 1;
+}
+message FilterBooksByGenreListResponse {
+    repeated Book filtered_books = 1;
+}
+//-----Filter Books By Genre-----//
+
+
+
+//-----Book-----//
+message Book {
+    string title = 1;
+    string genre = 2;
+    int64 available_copies = 3;
+    string ID = 4;
+}
+//-----Book-----//
+

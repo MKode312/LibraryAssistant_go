@@ -11,50 +11,6 @@ def CreateStudentIntoDB(id: str, full_name: str, grade: int, letter: str) -> str
         con.commit()
         return id
 
-def DeleteStudentByIDFromDB(id: str) -> bool:
-    with get_connection() as con:
-        cur = con.cursor()
-        cur.execute(
-            "DELETE FROM students WHERE id=?",
-            (id,))
-        if cur.rowcount:
-            con.commit()
-            return True
-        return False
-
-def UpdateFullNameOfStudentFromDB(id: str, full_name: str) -> students_pb2.Student:
-    with get_connection() as con:
-        cur = con.cursor()
-        cur.execute(
-            "UPDATE students SET full_name=? WHERE id=?",
-            (full_name, id))
-        if cur.rowcount:
-            con.commit()
-            return GetStudentByIDFromDB(id)
-        return None
-
-def UpdateGradeOfStudentFromDB(id: str, grade: int) -> students_pb2.Student:
-    with get_connection() as con:
-        cur = con.cursor()
-        cur.execute(
-            "UPDATE students SET grade=? WHERE id=?",
-            (grade, id))
-        if cur.rowcount:
-            con.commit()
-            return GetStudentByIDFromDB(id)
-        return None
-
-def UpdateLetterOfStudentFromDB(id: str, letter: str) -> students_pb2.Student:
-    with get_connection() as con:
-        cur = con.cursor()
-        cur.execute(
-            "UPDATE students SET letter=? WHERE id=?",
-            (letter, id))
-        if cur.rowcount:
-            con.commit()
-            return GetStudentByIDFromDB(id)
-        return None
-
 def GetStudentByIDFromDB(id: str) -> students_pb2.Student:
     with get_connection() as con:
         cur = con.cursor()
@@ -87,7 +43,7 @@ def GetStudentByFullNameFromDB(full_name: str, grade: int, letter:str) -> studen
             return student
         return None
     
-def GetGradeFromDB(grade: int, letter: str) -> list[students_pb2.Student]:
+def GetClassFromDB(grade: int, letter: str) -> list[students_pb2.Student]:
     with get_connection() as con:
         cur = con.cursor()
         cur.execute(
@@ -122,3 +78,47 @@ def GetParallelFromDB(grade: int) -> list[students_pb2.Student]:
                     letter=st[3]))
             return students
         return None
+
+def UpdateFullNameOfStudentFromDB(id: str, full_name: str) -> students_pb2.Student:
+    with get_connection() as con:
+        cur = con.cursor()
+        cur.execute(
+            "UPDATE students SET full_name=? WHERE id=?",
+            (full_name, id))
+        if cur.rowcount:
+            con.commit()
+            return GetStudentByIDFromDB(id)
+        return None
+
+def UpdateGradeOfStudentFromDB(id: str, grade: int) -> students_pb2.Student:
+    with get_connection() as con:
+        cur = con.cursor()
+        cur.execute(
+            "UPDATE students SET grade=? WHERE id=?",
+            (grade, id))
+        if cur.rowcount:
+            con.commit()
+            return GetStudentByIDFromDB(id)
+        return None
+
+def UpdateLetterOfStudentFromDB(id: str, letter: str) -> students_pb2.Student:
+    with get_connection() as con:
+        cur = con.cursor()
+        cur.execute(
+            "UPDATE students SET letter=? WHERE id=?",
+            (letter, id))
+        if cur.rowcount:
+            con.commit()
+            return GetStudentByIDFromDB(id)
+        return None
+
+def DeleteStudentByIDFromDB(id: str) -> bool:
+    with get_connection() as con:
+        cur = con.cursor()
+        cur.execute(
+            "DELETE FROM students WHERE id=?",
+            (id,))
+        if cur.rowcount:
+            con.commit()
+            return True
+        return False

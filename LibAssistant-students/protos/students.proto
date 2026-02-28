@@ -4,15 +4,15 @@ package students;
 
 service StudentsService {
   rpc CreateStudent (CreateStudentRequest) returns (CreateStudentResponse) {}
-  rpc DeleteStudentByID (DeleteStudentByIDRequest) returns (DeleteStudentByIDResponse) {}
+  rpc GetStudentByID (GetStudentByIDRequest) returns (GetStudentByIDResponse) {}
+  rpc GetStudentByFullName (GetStudentByFullNameRequest) returns (GetStudentByFullNameResponse) {}
+  rpc GetClass (GetClassRequest) returns (GetClassResponse) {}
+  rpc GetParallel (GetParallelRequest) returns (GetParallelResponse) {}
+  rpc GetStudentStats (GetStudentStatsRequest) returns (GetStudentStatsResponse) {}
   rpc UpdateFullNameOfStudent (UpdateFullNameOfStudentRequest) returns (UpdateFullNameOfStudentResponse) {}
   rpc UpdateGradeOfStudent (UpdateGradeOfStudentRequest) returns (UpdateGradeOfStudentResponse) {}
   rpc UpdateLetterOfStudent (UpdateLetterOfStudentRequest) returns (UpdateLetterOfStudentResponse) {}
-  rpc GetStudentByID (GetStudentByIDRequest) returns (GetStudentByIDResponse) {}
-  rpc GetStudentByFullName (GetStudentByFullNameRequest) returns (GetStudentByFullNameResponse) {}
-  rpc GetGrade (GetGradeRequest) returns (GetGradeResponse) {}
-  rpc GetParallel (GetParallelRequest) returns (GetParallelResponse) {}
-  rpc GetStudentStats (GetStudentStatsRequest) returns (GetStudentStatsResponse) {}
+  rpc DeleteStudentByID (DeleteStudentByIDRequest) returns (DeleteStudentByIDResponse) {}
 }
 
 //-----Create Student-----//
@@ -29,16 +29,67 @@ message CreateStudentResponse {
 //-----Create Student-----//
 
 
-
-//-----Delete Student By ID-----//
-message DeleteStudentByIDRequest {
+//-----Get Student By ID-----//
+message GetStudentByIDRequest {
   string student_id = 1;
 }
 
-message DeleteStudentByIDResponse {
-  bool success = 1;
+message GetStudentByIDResponse {
+  Student student = 1;
 }
-//-----Delete Student By ID-----//
+//-----Get Student By ID-----//
+
+
+
+//-----Get Student By Full Name-----//
+message GetStudentByFullNameRequest {
+  string full_name = 1;
+  int32 grade = 2;
+  string letter = 3;
+}
+
+message GetStudentByFullNameResponse {
+  Student student = 1;
+}
+//-----Get Student By Full Name-----//
+
+
+
+//-----Get Class-----//
+message GetClassRequest {
+  int32 grade = 1;
+  string letter = 2;
+}
+
+message GetClassResponse {
+  repeated Student students = 1;
+}
+//-----Get Class-----//
+
+
+
+//-----Get Parallel-----//
+message GetParallelRequest {
+  int32 grade = 1;
+}
+
+message GetParallelResponse {
+  repeated Student students = 1;
+}
+//-----Get Parallel-----//
+
+
+
+//-----Get Student Stats-----//
+message GetStudentStatsRequest {
+  string student_id = 1;
+}
+
+message GetStudentStatsResponse {
+  Student student = 1;
+  int64 books_taken = 2;
+}
+//-----Get Student Stats-----//
 
 
 
@@ -81,67 +132,15 @@ message UpdateLetterOfStudentResponse {
 
 
 
-//-----Get Student By ID-----//
-message GetStudentByIDRequest {
+//-----Delete Student By ID-----//
+message DeleteStudentByIDRequest {
   string student_id = 1;
 }
 
-message GetStudentByIDResponse {
-  Student student = 1;
+message DeleteStudentByIDResponse {
+  bool success = 1;
 }
-//-----Get Student By ID-----//
-
-
-
-//-----Get Student By Full Name-----//
-message GetStudentByFullNameRequest {
-  string full_name = 1;
-  int32 grade = 2;
-  string letter = 3;
-}
-
-message GetStudentByFullNameResponse {
-  Student student = 1;
-}
-//-----Get Student By Full Name-----//
-
-
-
-//-----Get Grade-----//
-message GetGradeRequest {
-  int32 grade = 1;
-  string letter = 2;
-}
-
-message GetGradeResponse {
-  repeated Student student = 1;
-}
-//-----Get Grade-----//
-
-
-
-//-----Get Parallel-----//
-message GetParallelRequest {
-  int32 grade = 1;
-}
-
-message GetParallelResponse {
-  repeated Student student = 1;
-}
-//-----Get Parallel-----//
-
-
-
-//-----Get Student Stats-----//
-message GetStudentStatsRequest {
-  string student_id = 1;
-}
-
-message GetStudentStatsResponse {
-  Student student = 1;
-  int64 books_taken = 2;
-}
-//-----Get Student Stats-----//
+//-----Delete Student By ID-----//
 
 
 
