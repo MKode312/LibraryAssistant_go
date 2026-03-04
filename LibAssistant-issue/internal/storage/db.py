@@ -4,12 +4,10 @@ from datetime import datetime
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, create_engine, text
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-DB_PATH = os.path.join(PROJECT_ROOT, 'issue_service.db')
-ENGINE = create_engine(f'sqlite:///{DB_PATH}', connect_args={'check_same_thread': False})
+STORAGE_PATH = os.path.join('.', 'issue_service.db')  # создастся в рабочей директории
+ENGINE = create_engine(f'sqlite:///{STORAGE_PATH}', connect_args={'check_same_thread': False})
 SessionLocal = sessionmaker(bind=ENGINE)
 Base = declarative_base()
-
 
 class Book(Base):
     __tablename__ = 'books'
