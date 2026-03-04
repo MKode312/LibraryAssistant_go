@@ -68,7 +68,7 @@ class StudentsGRPCClient:
             import protos.students_pb2_grpc as students_pb2_grpc  # type: ignore
 
             if self.host not in ('localhost', '127.0.0.1'):
-                self.channel = grpc.insecure_channel(f'{self.host}:{self.port}')
+                self.channel = grpc.secure_channel(f'{self.host}:{self.port}', grpc.ssl_channel_credentials())
             else:
                 self.channel = grpc.insecure_channel(f'{self.host}:{self.port}')
 
@@ -138,7 +138,7 @@ class BooksGRPCClient:
             import protos.books_pb2_grpc as books_pb2_grpc  # type: ignore
 
             if self.host not in ('localhost', '127.0.0.1'):
-                self.channel = grpc.insecure_channel(f'{self.host}:{self.port}')
+                self.channel = grpc.secure_channel(f'{self.host}:{self.port}', grpc.ssl_channel_credentials())
             else:
                 self.channel = grpc.insecure_channel(f'{self.host}:{self.port}')
 

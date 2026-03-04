@@ -3,7 +3,6 @@ import logging
 import os
 import sys
 import time
-import uuid
 from concurrent import futures
 from datetime import datetime, timedelta
 from typing import Dict, List
@@ -15,7 +14,7 @@ from grpc_tools import protoc
 from sqlalchemy.exc import IntegrityError
 
 from internal.clients.grpc_clients import close_all_clients, get_books_client, get_students_client
-from internal.config.settings import DEFAULT_ISSUE_DAYS, PORT
+from internal.config.settings import DEFAULT_ISSUE_DAYS, HOST, PORT
 from internal.service.status_codes import ErrorHandler
 from internal.storage.cache import load_debtors_cache, save_debtors_cache
 from internal.storage.db import Issue, SessionLocal, Student, init_db, update_all_overdues
@@ -36,12 +35,8 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def _is_valid_uuid(value: str) -> bool:
-    try:
-        uuid.UUID(str(value))
-        return True
-    except (ValueError, TypeError):
-        return False
+def _has_id(value: str) -> bool:
+    return value is not None and str(value).strip() != ''
 
 
 def compile_proto():
@@ -89,18 +84,18 @@ class IssueServicer(issue_pb2_grpc.IssueServiceServicer):
     def IssueBook(self, request, context):
         session = SessionLocal()
         try:
-            if not _is_valid_uuid(request.book_id):
+            if not _has_id(request.book_id):
                 ErrorHandler.set_custom_error(
                     context,
                     grpc.StatusCode.INVALID_ARGUMENT,
-                    'book_id must be a UUID string',
+                    'book_id is required',
                 )
                 return issue_pb2.IssueResponse()
-            if not _is_valid_uuid(request.student_id):
+            if not _has_id(request.student_id):
                 ErrorHandler.set_custom_error(
                     context,
                     grpc.StatusCode.INVALID_ARGUMENT,
-                    'student_id must be a UUID string',
+                    'student_id is required',
                 )
                 return issue_pb2.IssueResponse()
 
@@ -423,12 +418,12 @@ class IssueServicer(issue_pb2_grpc.IssueServiceServicer):
             logger.warning('Failed to emit event: %s', exc)
 
 
-def serve(port: int = PORT):
+def serve(host: str = HOST, port: int = PORT):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     issue_pb2_grpc.add_IssueServiceServicer_to_server(IssueServicer(), server)
-    server.add_insecure_port(f'[::]:{port}')
+    server.add_insecure_port(f'{host}:{port}')
     server.start()
-    logger.info('Issue service gRPC started on port %s', port)
+    logger.info('Issue service gRPC started on %s:%s', host, port)
     try:
         while True:
             time.sleep(60)

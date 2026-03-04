@@ -159,8 +159,9 @@ func (s *serverAPI) GetListOfBooks(ctx context.Context, req *booksv1.GetListOfBo
 	var protoBooks []*booksv1.Book
 	for _, book := range booksList {
 		protoBook := &booksv1.Book{
-			ID:     book.ID,
-			Title:  book.Title,
+			ID:              book.ID,
+			Title:           book.Title,
+			Genre:           book.Genre,
 			AvailableCopies: book.AvailableCopies,
 		}
 		protoBooks = append(protoBooks, protoBook)
@@ -187,9 +188,9 @@ func (s *serverAPI) FilterBooksByGenreList(ctx context.Context, req *booksv1.Fil
 	var protoBooks []*booksv1.Book
 	for _, book := range booksList {
 		protoBook := &booksv1.Book{
-			ID: book.ID,
-			Title: book.Title,
-			Genre: book.Genre,
+			ID:              book.ID,
+			Title:           book.Title,
+			Genre:           book.Genre,
 			AvailableCopies: book.AvailableCopies,
 		}
 		protoBooks = append(protoBooks, protoBook)
@@ -225,7 +226,7 @@ func validateAddCopies(req *booksv1.AddCopiesRequest) error {
 	}
 
 	return nil
-} 
+}
 
 func validateTakeBook(req *booksv1.TakeBookRequest) error {
 	if req.GetBookId() == "" {

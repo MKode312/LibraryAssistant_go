@@ -82,13 +82,13 @@ func (s *Storage) User(ctx context.Context, email string) (user models.User, err
 		}
 	}()
 
-	rows, err := tx.Query(ctx, "SELECT id, email, pass_hash FROM users WHERE email = $1", email)
+	rows, err := tx.Query(ctx, "SELECT id, email, pass_hash, isAdmin FROM users WHERE email = $1", email)
 	if err != nil {
 		return models.User{}, fmt.Errorf("%s: %w", op, err)
 	}
 
 	for rows.Next() {
-		if err := rows.Scan(&user.ID, &user.Email, &user.PassHash); err != nil {
+		if err := rows.Scan(&user.ID, &user.Email, &user.PassHash, &user.IsAdmin); err != nil {
 			if errors.Is(err, pgx.ErrNoRows) {
 				return models.User{}, fmt.Errorf("%s: %w", op, storage.ErrUserNotFound)
 			}
