@@ -82,7 +82,7 @@ func (s *Storage) User(ctx context.Context, email string) (user models.User, err
 		}
 	}()
 
-	rows, err := tx.Query(ctx, "SELECT id, email, pass_hash, isAdmin FROM users WHERE email = $1", email)
+	rows, err := tx.Query(ctx, "SELECT id, email, pass_hash, is_admin FROM users WHERE email = $1", email)
 	if err != nil {
 		return models.User{}, fmt.Errorf("%s: %w", op, err)
 	}
