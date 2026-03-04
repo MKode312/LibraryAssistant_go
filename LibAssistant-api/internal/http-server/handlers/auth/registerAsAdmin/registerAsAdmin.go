@@ -69,9 +69,7 @@ func New(ctx context.Context, log *slog.Logger, ssoClient *ssogrpc.Client) http.
 		if err != nil {
 			if errors.Is(err, ssogrpc.ErrUserExists) {
 				log.Error("user already exists")
-
 				w.WriteHeader(http.StatusConflict)
-
 				render.JSON(w, r, resp.Error("You cannot register the existing user"))
 
 				return
@@ -79,21 +77,15 @@ func New(ctx context.Context, log *slog.Logger, ssoClient *ssogrpc.Client) http.
 
 			if errors.Is(err, ssogrpc.ErrWrongAdminSecret) {
 				log.Error("wrong admin secret")
-
 				w.WriteHeader(http.StatusForbidden)
-
 				render.JSON(w, r, resp.Error("You have provided the wrong admin secret"))
-
 				return
 			}
 
 			if errors.Is(err, ssogrpc.ErrInvalidCredentials) {
 				log.Error("invalid credentials")
-
 				w.WriteHeader(http.StatusBadRequest)
-
 				render.JSON(w, r, resp.Error("Invalid email or password"))
-
 				return
 			}
 
@@ -108,18 +100,22 @@ func New(ctx context.Context, log *slog.Logger, ssoClient *ssogrpc.Client) http.
 			}
 
 			log.Error("failed to register new user", sl.Err(err))
-
 			w.WriteHeader(http.StatusInternalServerError)
-
 			render.JSON(w, r, resp.Error("Unknown error"))
-
 			return
 		}
 
 		log.Info("admin registered", slog.String("id", userID))
 
+		http.SetCookie(w, &http.Cookie{
+			Name: "is_admin",
+			Value: "true",
+			Path: "/",
+			SameSite: http.SameSiteStrictMode,
+			HttpOnly: true,
+		})
+		log.Info("cookie was set")
 		w.WriteHeader(http.StatusCreated)
-
 		render.JSON(w, r, Response{
 			Response: resp.OK(),
 			UserID: userID,

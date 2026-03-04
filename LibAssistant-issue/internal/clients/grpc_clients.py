@@ -8,10 +8,10 @@ import grpc_tools
 from grpc_tools import protoc
 
 from internal.config.settings import (
-    BOOKS_SERVICE_HOST,
-    BOOKS_SERVICE_PORT,
-    STUDENTS_SERVICE_HOST,
-    STUDENTS_SERVICE_PORT,
+    BOOKS_HOST,
+    BOOKS_PORT,
+    STUDENTS_HOST,
+    STUDENTS_PORT,
 )
 
 logger = logging.getLogger(__name__)
@@ -49,7 +49,7 @@ def _ensure_proto(proto_name: str) -> bool:
 
 
 class StudentsGRPCClient:
-    def __init__(self, host: str = STUDENTS_SERVICE_HOST, port: int = STUDENTS_SERVICE_PORT):
+    def __init__(self, host: str = STUDENTS_HOST, port: int = STUDENTS_PORT):
         self.host = host
         self.port = port
         self.channel = None
@@ -68,7 +68,7 @@ class StudentsGRPCClient:
             import protos.students_pb2_grpc as students_pb2_grpc  # type: ignore
 
             if self.host not in ('localhost', '127.0.0.1'):
-                self.channel = grpc.secure_channel(f'{self.host}:{self.port}', grpc.ssl_channel_credentials())
+                self.channel = grpc.insecure_channel(f'{self.host}:{self.port}')
             else:
                 self.channel = grpc.insecure_channel(f'{self.host}:{self.port}')
 
@@ -119,7 +119,7 @@ class StudentsGRPCClient:
 
 
 class BooksGRPCClient:
-    def __init__(self, host: str = BOOKS_SERVICE_HOST, port: int = BOOKS_SERVICE_PORT):
+    def __init__(self, host: str = BOOKS_HOST, port: int = BOOKS_PORT):
         self.host = host
         self.port = port
         self.channel = None
@@ -138,7 +138,7 @@ class BooksGRPCClient:
             import protos.books_pb2_grpc as books_pb2_grpc  # type: ignore
 
             if self.host not in ('localhost', '127.0.0.1'):
-                self.channel = grpc.secure_channel(f'{self.host}:{self.port}', grpc.ssl_channel_credentials())
+                self.channel = grpc.insecure_channel(f'{self.host}:{self.port}')
             else:
                 self.channel = grpc.insecure_channel(f'{self.host}:{self.port}')
 

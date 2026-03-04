@@ -217,6 +217,17 @@ func New(ctx context.Context, log *slog.Logger, ssoClient *ssogrpc.Client, stude
 			return
 		}
 
+		log.Info("user was registered and the student was created successfully")
+
+		http.SetCookie(w, &http.Cookie{
+			Name: "is_admin",
+			Value: "false",
+			Path: "/",
+			HttpOnly: true,
+			SameSite: http.SameSiteStrictMode,
+		})
+		log.Info("cookie was set")
+
 		w.WriteHeader(http.StatusCreated)
 
 		render.JSON(w, r, Response{

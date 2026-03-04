@@ -5,7 +5,6 @@ import (
 	ssogrpc "LibAssistant_api/internal/clients/sso/grpc"
 	studentsgrpc "LibAssistant_api/internal/clients/students/grpc"
 	"LibAssistant_api/internal/config"
-	isAdmin "LibAssistant_api/internal/http-server/handlers/auth/IsAdmin"
 	"LibAssistant_api/internal/http-server/handlers/auth/login"
 	register "LibAssistant_api/internal/http-server/handlers/auth/registerAndCreateStudent"
 
@@ -18,6 +17,7 @@ import (
 	getbookbytitle "LibAssistant_api/internal/http-server/handlers/books/getBookByTitle"
 	getlistofbooks "LibAssistant_api/internal/http-server/handlers/books/getListOfBooks"
 	takebook "LibAssistant_api/internal/http-server/handlers/books/takeBook"
+	MWIsadmin "LibAssistant_api/internal/http-server/middleware/isAdmin"
 	MWJwt "LibAssistant_api/internal/http-server/middleware/jwt"
 	MWLogger "LibAssistant_api/internal/http-server/middleware/logger"
 	"LibAssistant_api/internal/lib/logger/handlers/slogpretty"
@@ -74,22 +74,25 @@ func main() {
 	}
 
 	jwtMiddleware := MWJwt.New(log)
+	isAdminMiddleware := MWIsadmin.New(log)
 
 	router.Post("/register", register.New(context.Background(), log, ssoClient, studentsClient))
 	router.Post("/login", login.New(context.Background(), log, ssoClient))
 	router.Post("/registerAsAdmin", registerAsAdmin.New(context.Background(), log, ssoClient))
 
-	router.Group(func(r chi.Router) {
-		r.Use(jwtMiddleware)
-		r.Get("/isAdmin/{userID}", isAdmin.New(context.Background(), log, ssoClient))
-		r.Post("/addBook", addbook.New(context.Background(), log, booksClient))
-		r.Post("/addCopies/{bookID}", addcopies.New(context.Background(), log, booksClient))
-		r.Get("/book/{bookID}", getbookbyid.New(context.Background(), log, booksClient))
-		r.Get("/book/title/{title}", getbookbytitle.New(context.Background(), log, booksClient))
-		r.Delete("/book/{bookID}", deletebook.New(context.Background(), log, booksClient))
-		r.Put("/takeBook/{bookID}", takebook.New(context.Background(), log, booksClient))
-		r.Get("/books", getlistofbooks.New(context.Background(), log, booksClient))
-		r.Get("/books/{genre}", filterbooksbygenrelist.New(context.Background(), log, booksClient))
+	router.Group(func(rout chi.Router) {
+		rout.Use(jwtMiddleware)
+		rout.Group(func(r chi.Router) {
+			r.Use(isAdminMiddleware)
+			r.Post("/addBook", addbook.New(context.Background(), log, booksClient))
+			r.Post("/addCopies/{bookID}", addcopies.New(context.Background(), log, booksClient))
+			r.Delete("/book/{bookID}", deletebook.New(context.Background(), log, booksClient))
+		})
+		rout.Get("/book/{bookID}", getbookbyid.New(context.Background(), log, booksClient))
+		rout.Get("/book/title/{title}", getbookbytitle.New(context.Background(), log, booksClient))
+		rout.Put("/takeBook/{bookID}", takebook.New(context.Background(), log, booksClient))
+		rout.Get("/books", getlistofbooks.New(context.Background(), log, booksClient))
+		rout.Get("/books/{genre}", filterbooksbygenrelist.New(context.Background(), log, booksClient))
 	})
 
 	log.Info("starting http-server", slog.String("address", cfg.HTTPServer.Address))
